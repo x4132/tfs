@@ -1,0 +1,16 @@
+bin
+tmp
+*.db
+tailwindcss
+
+.DS_Store
+.Trashes
+
+.env
+.env.local
+
+.exe
+.so
+.dll
+
+node_modules
