@@ -36,6 +36,7 @@ ARG PORT
 ENV MODE="PRODUCTION"
 
 COPY --from=tailwind-prebuild /app/static/css/style.min.css /app/static/css/style.css
+COPY ./static/js/main.js /app/static/js/main.js
 COPY --from=build /app/bin/$APP_NAME /app/tfs
 COPY .env /app/.env
 

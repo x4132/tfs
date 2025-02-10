@@ -102,6 +102,7 @@ function createFileDOMComponent(file, index) {
 
     uploadButton.addEventListener("click", (evt) => {
         evt.target.textContent = "Authenticating...";
+        let fileId;
         fetch(
             `/getUploadKey?filename=${encodeURIComponent(file.name)}&filesize=${file.size}`,
             {
@@ -122,6 +123,7 @@ function createFileDOMComponent(file, index) {
             })
             .then((data) => {
                 evt.target.textContent = "Uploading...";
+                fileId = data.id;
                 fetch(data.url, {
                     method: "PUT",
                     headers: {
@@ -131,7 +133,8 @@ function createFileDOMComponent(file, index) {
                 })
                     .then((uploadResponse) => {
                         if (uploadResponse.ok) {
-                            evt.target.textContent = "Success";
+                        evt.target.innerHTML = `<a class="text-black dark:text-white" href="https:\/\/img.x4132.dev/${fileId}/">https:\/\/img.x4132.dev/${fileId}/</a>`
+                            return uploadResponse.json();
                         } else {
                             evt.target.textContent = "Upload Fail";
                             throw new Error("File upload failed");

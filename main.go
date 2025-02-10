@@ -173,7 +173,7 @@ func main() {
 
 		if (*page)[0].Success {
             w.WriteHeader(http.StatusOK)
-            w.Write([]byte(fmt.Sprintf(`{"method": "s3", "url": "%s"}`, presignResult.URL)))
+            w.Write([]byte(fmt.Sprintf(`{"method": "s3", "url": "%s", "id": "%s"}`, presignResult.URL, id.String())))
 		} else {
             w.WriteHeader(http.StatusInternalServerError)
             w.Write([]byte("Something went wrong. Please try again"))
