@@ -34,18 +34,18 @@ import (
 
 func main() {
 	// env setup
-    path_dir := "./"
-    if os.Getenv("MODE") == "PRODUCTION" {
-        path_dir = "/app/"
-    }
+	path_dir := "./"
+	if os.Getenv("MODE") == "PRODUCTION" {
+		path_dir = "/app/"
+	}
 	err := godotenv.Load(filepath.Join(path_dir, ".env"))
 	if err != nil {
-        log.Print(err)
+		log.Print(err)
 		log.Print("Error loading .env file")
 
-        for true {
+		for true {
 
-        }
+		}
 	}
 
 	// r2/d1 auth
@@ -73,15 +73,15 @@ func main() {
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(r2AkeyID, r2Secret, "")),
 		config.WithRegion("auto"),
 	)
-    if err != nil {
-        log.Fatal(err)
-    }
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    r2Client := s3.NewFromConfig(cfg, func(o *s3.Options) {
-        o.BaseEndpoint = aws.String(r2Url)
-    })
+	r2Client := s3.NewFromConfig(cfg, func(o *s3.Options) {
+		o.BaseEndpoint = aws.String(r2Url)
+	})
 
-    r2PresignClient := s3.NewPresignClient(r2Client)
+	r2PresignClient := s3.NewPresignClient(r2Client)
 
 	// actual REST routes
 	r := chi.NewRouter()
@@ -151,11 +151,11 @@ func main() {
 			}
 		}
 
-        // presign the s3 url
-        presignResult, err := r2PresignClient.PresignPutObject(context.TODO(), &s3.PutObjectInput{
-            Bucket: aws.String(os.Getenv("R2_BUCKETNAME")),
-            Key: aws.String(id.String()),
-        })
+		// presign the s3 url
+		presignResult, err := r2PresignClient.PresignPutObject(context.TODO(), &s3.PutObjectInput{
+			Bucket: aws.String(os.Getenv("R2_BUCKETNAME")),
+			Key:    aws.String(id.String()),
+		})
 
 		page, err = cfClient.D1.Database.Query(context.TODO(),
 			os.Getenv("D1_ID"),
@@ -172,12 +172,12 @@ func main() {
 		}
 
 		if (*page)[0].Success {
-            w.WriteHeader(http.StatusOK)
-            w.Write([]byte(fmt.Sprintf(`{"method": "s3", "url": "%s", "id": "%s"}`, presignResult.URL, id.String())))
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(fmt.Sprintf(`{"method": "s3", "url": "%s", "id": "%s"}`, presignResult.URL, id.String())))
 		} else {
-            w.WriteHeader(http.StatusInternalServerError)
-            w.Write([]byte("Something went wrong. Please try again"))
-            panic((*page)[0].Results)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Something went wrong. Please try again"))
+			panic((*page)[0].Results)
 		}
 	})
 
