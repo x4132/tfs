@@ -100,7 +100,11 @@ function createFileDOMComponent(file, index) {
     uploadButton.className = "btn btn-upload btn-upload-individual ml-2";
     uploadButton.textContent = "Upload";
 
-    uploadButton.addEventListener("click", (evt) => {
+    uploadButton.addEventListener("click", function uploadHandler(evt) {
+        if (evt.target.getAttribute("uploaded") == "true") {
+            return;
+        }
+
         evt.target.textContent = "Authenticating...";
         let fileId;
         fetch(
@@ -133,15 +137,17 @@ function createFileDOMComponent(file, index) {
                 })
                     .then((uploadResponse) => {
                         if (uploadResponse.ok) {
-                        evt.target.innerHTML = `<a class="text-black dark:text-white" href="https:\/\/img.x4132.dev/${fileId}/">https:\/\/img.x4132.dev/${fileId}/</a>`
+                            evt.target.innerHTML = `<a class="text-black dark:text-white" href="https:\/\/img.x4132.dev/${fileId}/">https:\/\/img.x4132.dev/${fileId}/</a>`;
+                            evt.target.setAttribute("uploaded", "true");
                             return uploadResponse.json();
                         } else {
-                            evt.target.textContent = "Upload Fail";
+                            evt.target.textContent = "Upload Failed";
                             throw new Error("File upload failed");
                         }
                     })
                     .catch((uploadError) => {
                         console.error("Error uploading file:", uploadError);
+                        throw new Error(uploadError);
                     });
             });
     });
@@ -193,9 +199,9 @@ function setAuthToken(evt) {
 }
 
 function uploadAll() {
-    let uploadBox = document.querySelectorAll(".btn-upload-individual")
+    let uploadBox = document.querySelectorAll(".btn-upload-individual");
 
-    uploadBox.forEach(button => {
+    uploadBox.forEach((button) => {
         button.click();
     });
 }
